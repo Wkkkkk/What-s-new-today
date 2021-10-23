@@ -75,7 +75,7 @@ def set_rules(trends):
 #        {"value": "cat has:images -grumpy", "tag": "cat pictures"},
 #    ]
 
-    sample_rules = [{"value": x + " -is:retweet -is:quote -is:reply", "tag": x} for x in trends[:10]]
+    sample_rules = [{"value": x + " -is:retweet -is:quote -is:reply", "tag": x} for x in trends[:5]]
     payload = {"add": sample_rules}
     response = requests.post(
         "https://api.twitter.com/2/tweets/search/stream/rules",

@@ -1,6 +1,7 @@
 from __future__ import print_function
 import sys
 import json
+import math
 from time import time
 
 from pyspark import SparkContext
@@ -47,10 +48,20 @@ def get_post(id):
         post["fields"] = fields
 
         tags = {}
-        tags["context_annotations"] = response.get("context_annotations", [])
-        tags["public_metrics"] = response.get("public_metrics", {})
+        annotations = response.get("context_annotations", [])
+        tags["context_annotations"] = annotations
+        annotation = 0
+        if annotations:
+            annotation = int(annotations[0]["domain"]["id"])
+        tags["annotation"] = annotation
+
+        count_sum = 0
+        for count in ["retweet_count", "reply_count", "like_count", "quote_count"]:
+            count_sum += response["public_metrics"][count]
+        tags["count_sum"] = math.log2(count_sum + 2)
+        tags["public_metrics"] = response["public_metrics"]
+
         post["tags"] = tags
-        
         print(">>POST:", post)
         posts.append(post)
 
@@ -76,7 +87,7 @@ def main():
     counts.pprint()
 
     # get all posts
-    posts = contents.window(10, 6) \
+    posts = contents.window(10, 4) \
         .map(extract_id) \
         .map(get_post) \
         .map(lambda post: client.write_points(post))
