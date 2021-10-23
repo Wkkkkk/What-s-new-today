@@ -22,6 +22,7 @@ def create_url(id_list):
     # You can adjust ids to include a single Tweets.
     # Or you can add to up to 100 comma-separated IDs
     url = "https://api.twitter.com/2/tweets?{}&{}".format(ids, tweet_fields)
+#    print("url:", url)
     return url
 
 
